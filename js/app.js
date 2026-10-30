@@ -15,6 +15,9 @@ async function cargarMovimientos() {
 
     const movimientos = await response.json();
 
+    document.getElementById("total-movements").textContent =
+    movimientos.length;
+
     const tabla = document.getElementById("transactions-table");
 
     tabla.innerHTML = "";
