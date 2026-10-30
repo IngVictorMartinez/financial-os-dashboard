@@ -1,1 +1,71 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+}
 
+.header {
+    background: #111827;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    padding: 20px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.card p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.filters {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.filters select {
+    margin-right: 10px;
+    padding: 10px;
+}
+
+.transactions {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #111827;
+    color: white;
+}
+
+th,
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
