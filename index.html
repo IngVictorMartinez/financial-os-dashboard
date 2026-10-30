@@ -1,1 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial OS</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
+    <header class="header">
+        <h1>💰 Financial OS</h1>
+        <p>Centro de control financiero personal</p>
+    </header>
+
+    <main class="container">
+
+        <section class="cards">
+
+            <div class="card">
+                <h3>💸 Gasto del mes</h3>
+                <p id="monthly-expense">$0</p>
+            </div>
+
+            <div class="card">
+                <h3>📈 Ingreso del mes</h3>
+                <p id="monthly-income">$0</p>
+            </div>
+
+            <div class="card">
+                <h3>🏦 Cuenta principal</h3>
+                <p id="top-account">-</p>
+            </div>
+
+            <div class="card">
+                <h3>🏷️ Categoría principal</h3>
+                <p id="top-category">-</p>
+            </div>
+
+        </section>
+
+        <section class="filters">
+
+            <h2>Filtros</h2>
+
+            <select id="filter-account">
+                <option>Todas las cuentas</option>
+            </select>
+
+            <select id="filter-category">
+                <option>Todas las categorías</option>
+            </select>
+
+            <select id="filter-type">
+                <option>Todos los tipos</option>
+            </select>
+
+        </section>
+
+        <section class="transactions">
+
+            <h2>Movimientos</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                        <th>Cuenta</th>
+                        <th>Categoría</th>
+                        <th>Descripción</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+
+                <tbody id="transactions-table">
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>
