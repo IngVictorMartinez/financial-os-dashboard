@@ -21,31 +21,27 @@ async function cargarMovimientos() {
     const anioActual = hoy.getFullYear();
 
     let gastoDelMes = 0;
-    let ingresoDelMes = 0;
+let ingresoDelMes = 0;
 
-    movimientos.forEach(movimiento => {
+const mesActual = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}`;
 
-        const fecha = new Date(movimiento.transaction_date);
+movimientos.forEach(movimiento => {
 
-        const mismoMes =
-            fecha.getMonth() === mesActual &&
-            fecha.getFullYear() === anioActual;
+    const fechaMovimiento = movimiento.transaction_date.substring(0, 7);
 
-        if (
-            mismoMes &&
-            movimiento.transaction_type === "Gasto"
-        ) {
+    if (fechaMovimiento === mesActual) {
+
+        if (movimiento.transaction_type === "Gasto") {
             gastoDelMes += Number(movimiento.amount);
         }
 
-        if (
-            mismoMes &&
-            movimiento.transaction_type === "Ingreso"
-        ) {
+        if (movimiento.transaction_type === "Ingreso") {
             ingresoDelMes += Number(movimiento.amount);
         }
 
-    });
+    }
+
+});
 
     document.getElementById("monthly-expense").textContent =
         `$${gastoDelMes.toLocaleString()}`;
