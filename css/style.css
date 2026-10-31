@@ -188,3 +188,12 @@ tr:last-child td {
     color: #34d399;
     font-weight: 600;
 }
+.card.savings-card {
+    background: linear-gradient(135deg, #1e293b 0%, #065f46 100%);
+    border-color: #10b981;
+}
+
+.card.savings-card p {
+    color: #34d399;
+    font-size: 1.8rem;
+}
