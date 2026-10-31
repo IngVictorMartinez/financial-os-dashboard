@@ -13,6 +13,13 @@ async function cargarMovimientos() {
         }
     );
 
+    console.log(response.status);
+
+const movimientos = await response.json();
+
+console.log(movimientos);
+
+    
     const movimientos = await response.json();
 
     const hoy = new Date();
