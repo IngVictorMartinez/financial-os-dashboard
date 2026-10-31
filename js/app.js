@@ -21,21 +21,22 @@
             const mesActualFiltro = fechaActual.getMonth() + 1;
             const anioActualFiltro = fechaActual.getFullYear();
 
-            // Mapa para saldos por cuenta
+            // Mapa para saldos por cuenta (Suma total real de las cuentas)
             const saldosCuentas = {};
             cuentas.forEach(c => saldosCuentas[c.name] = 0);
 
             let gastoDelMes = 0;
             let ingresoDelMes = 0;
+            let ahorroDelMes = 0;
 
-            // Procesar Transacciones
             const movimientosDelMes = [];
 
             movimientos.forEach(mov => {
                 const monto = Number(mov.amount) || 0;
                 const esIngreso = mov.transaction_type === "Ingreso";
+                const esAhorro = mov.category && mov.category.toLowerCase().trim() === "ahorro";
 
-                // Acumular saldo total general por cuenta
+                // Acumular saldo total general por cuenta (Patrimonio real)
                 if (mov.account && saldosCuentas[mov.account] !== undefined) {
                     saldosCuentas[mov.account] += esIngreso ? monto : -monto;
                 }
@@ -47,8 +48,14 @@
 
                     if (partes.length >= 2 && partes[1] === mesActualFiltro && partes[0] === anioActualFiltro) {
                         movimientosDelMes.push(mov);
-                        if (esIngreso) ingresoDelMes += monto;
-                        else gastoDelMes += monto;
+                        
+                        if (esAhorro) {
+                            ahorroDelMes += monto;
+                        } else if (esIngreso) {
+                            ingresoDelMes += monto;
+                        } else {
+                            gastoDelMes += monto;
+                        }
                     }
                 }
             });
@@ -57,9 +64,10 @@
             const saldoTotalGeneral = Object.values(saldosCuentas).reduce((acc, val) => acc + val, 0);
             document.getElementById("total-balance").textContent = `$${saldoTotalGeneral.toLocaleString()}`;
 
-            // 4. Renderizar Tarjetas Mensuales
-            document.getElementById("monthly-expense").textContent = `$${gastoDelMes.toLocaleString()}`;
+            // 4. Renderizar Tarjetas Mensuales (3 tarjetas)
             document.getElementById("monthly-income").textContent = `$${ingresoDelMes.toLocaleString()}`;
+            document.getElementById("monthly-expense").textContent = `$${gastoDelMes.toLocaleString()}`;
+            document.getElementById("monthly-savings").textContent = `$${ahorroDelMes.toLocaleString()}`;
 
             // 5. Renderizar Lista de Cuentas
             const containerCuentas = document.getElementById("accounts-container");
@@ -75,7 +83,7 @@
                 `;
             });
 
-            // 6. Renderizar Tabla de Movimientos
+            // 6. Renderizar Tabla de Movimientos del Mes
             const tabla = document.getElementById("transactions-table");
             tabla.innerHTML = "";
 
@@ -86,10 +94,15 @@
 
             movimientosDelMes.forEach(mov => {
                 const esIngreso = mov.transaction_type === "Ingreso";
+                const esAhorro = mov.category && mov.category.toLowerCase().trim() === "ahorro";
+                
+                let badgeClass = esIngreso ? 'badge-ingreso' : 'badge-gasto';
+                if (esAhorro) badgeClass = 'badge-ahorro'; // Opcional si quieres darle color verde ahorro
+
                 tabla.innerHTML += `
                     <tr>
                         <td>${mov.transaction_date}</td>
-                        <td class="${esIngreso ? 'badge-ingreso' : 'badge-gasto'}">$${Number(mov.amount || 0).toLocaleString()}</td>
+                        <td class="${badgeClass}">$${Number(mov.amount || 0).toLocaleString()}</td>
                         <td>${mov.account ?? ""}</td>
                         <td>${mov.category ?? ""}</td>
                         <td>${mov.transaction_type ?? ""}</td>
