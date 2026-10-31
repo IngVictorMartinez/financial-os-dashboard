@@ -197,3 +197,6 @@ tr:last-child td {
     color: #34d399;
     font-size: 1.8rem;
 }
+.card.savings p { 
+    color: #34d399; 
+}
