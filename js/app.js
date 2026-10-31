@@ -19,10 +19,10 @@ async function cargarMovimientos() {
 
         const movimientos = await response.json();
 
-        // Obtener el mes (1-12) y año actual
-        const hoy = new Date();
-        const mesActual = hoy.getMonth() + 1; 
-        const anioActual = hoy.getFullYear();
+        // Obtener mes (1-12) y año actual real
+        const fechaHoy = new Date();
+        const mesActualNum = fechaHoy.getMonth() + 1; 
+        const anioActualNum = fechaHoy.getFullYear();
 
         let gastoDelMes = 0;
         let ingresoDelMes = 0;
@@ -31,14 +31,19 @@ async function cargarMovimientos() {
         const movimientosDelMes = movimientos.filter(movimiento => {
             if (!movimiento.transaction_date) return false;
             
-            // Limpiamos la fecha por si viene con formato ISO (YYYY-MM-DDTHH:mm:ss)
-            const fechaLimpia = movimiento.transaction_date.split('T')[0];
-            const [anioMov, mesMov] = fechaLimpia.split('-').map(Number);
+            // Limpiar la fecha obtenida de Supabase para separar año, mes y día de forma segura
+            const fechaLimpia = movimiento.transaction_date.toString().trim().split('T')[0];
+            const partesFecha = fechaLimpia.split(/[-./]/).map(Number);
             
-            return mesMov === mesActual && anioMov === anioActual;
+            if (partesFecha.length < 2) return false;
+
+            const anioMov = partesFecha[0];
+            const mesMov = partesFecha[1];
+            
+            return mesMov === mesActualNum && anioMov === anioActualNum;
         });
 
-        // Calcular gastos e ingresos del mes
+        // Calcular gastos e ingresos del mes filtrado
         movimientosDelMes.forEach(movimiento => {
             const monto = Number(movimiento.amount) || 0;
             if (movimiento.transaction_type === "Gasto") {
@@ -48,12 +53,12 @@ async function cargarMovimientos() {
             }
         });
 
-        // Actualizar las tarjetas superiores
+        // Actualizar las tarjetas del dashboard
         document.getElementById("monthly-expense").textContent = `$${gastoDelMes.toLocaleString()}`;
         document.getElementById("monthly-income").textContent = `$${ingresoDelMes.toLocaleString()}`;
         document.getElementById("total-movements").textContent = movimientosDelMes.length;
 
-        // Llenar la tabla con los movimientos del mes
+        // Rellenar la tabla HTML
         const tabla = document.getElementById("transactions-table");
         tabla.innerHTML = "";
 
