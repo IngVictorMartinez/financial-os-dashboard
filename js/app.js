@@ -37,6 +37,8 @@ async function cargarMovimientos() {
         }
     
     });
+    document.getElementById("monthly-expense").textContent =
+    `$${gastoDelMes.toLocaleString()}`;
 
     document.getElementById("total-movements").textContent =
     movimientos.length;
