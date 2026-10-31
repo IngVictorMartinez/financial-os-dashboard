@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://beepnamymzhmfgtbruhk.supabase.co/rest/v1/";
-const SUPABASE_KEY = "TU_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "sb_publishable_M8twaU9HppdklZxLDI0pLg_G3UaxuWq";
 
 async function cargarMovimientos() {
 
@@ -45,7 +45,7 @@ async function cargarMovimientos() {
         }
 
     });
-
+    
     document.getElementById("monthly-expense").textContent =
         `$${gastoDelMes.toLocaleString()}`;
 
