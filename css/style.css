@@ -151,6 +151,39 @@ tr:last-child td {
     font-weight: 600;
 }
 
+/* Menú de Navegación Estilo Píldora */
+.nav-menu {
+    display: flex;
+    gap: 8px;
+    background: #1e293b;
+    padding: 6px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    border: 1px solid #334155;
+}
+
+.nav-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-btn:hover {
+    color: #f8fafc;
+    background: rgba(51, 65, 85, 0.5);
+}
+
+.nav-btn.active {
+    background: #3b82f6;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
 .badge-ingreso {
     color: #34d399;
     font-weight: 600;
