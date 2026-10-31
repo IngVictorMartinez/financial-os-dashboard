@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Financial OS - Historial</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>💰 Financial OS</h1>
+        <p>Historial Completo de Movimientos</p>
+    </header>
+
+    <!-- Menú de Navegación -->
+    <nav class="nav-menu">
+        <a href="index.html" class="nav-btn">📊 Dashboard Mes</a>
+        <a href="historial.html" class="nav-btn active">📜 Historial Completo</a>
+    </nav>
+
+    <main class="container">
+
+        <!-- Tabla de Historial Completo -->
+        <section class="transactions">
+            <h2 class="section-title">Todos los Registros</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Cuenta</th>
+                            <th>Categoría</th>
+                            <th>Descripción</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="full-history-table"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="js/historial.js"></script>
+
+</body>
+
+</html>
