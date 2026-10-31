@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Financial OS</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -17,45 +17,51 @@
 
     <main class="container">
 
+        <!-- Métricas Principales -->
         <section class="cards">
-
-            <div class="card expense">
-                <h3>💸 Gastos del mes</h3>
-                <p id="monthly-expense">$0</p>
+            
+            <div class="card full-width balance">
+                <h3>💳 Dinero Total Disponible</h3>
+                <p id="total-balance">$0</p>
             </div>
 
             <div class="card income">
-                <h3>📈 Ingresos del mes</h3>
+                <h3>📈 Ingresos Mes</h3>
                 <p id="monthly-income">$0</p>
             </div>
 
-            <div class="card movements">
-                <h3>📊 Movimientos</h3>
-                <p id="total-movements">0</p>
+            <div class="card expense">
+                <h3>💸 Gastos Mes</h3>
+                <p id="monthly-expense">$0</p>
             </div>
 
         </section>
 
+        <!-- Saldos por Cuenta -->
+        <section class="accounts-section">
+            <h2 class="section-title">Mis Cuentas y Efectivo</h2>
+            <div class="account-list" id="accounts-container">
+                <!-- Se inyecta dinámicamente desde JS -->
+            </div>
+        </section>
+
+        <!-- Lista de Movimientos -->
         <section class="transactions">
-
-            <h2>Movimientos</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Monto</th>
-                        <th>Cuenta</th>
-                        <th>Categoría</th>
-                        <th>Descripción</th>
-                        <th>Tipo</th>
-                    </tr>
-                </thead>
-
-                <tbody id="transactions-table"></tbody>
-
-            </table>
-
+            <h2 class="section-title">Últimos Movimientos</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Cuenta</th>
+                            <th>Categoría</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-table"></tbody>
+                </table>
+            </div>
         </section>
 
     </main>
