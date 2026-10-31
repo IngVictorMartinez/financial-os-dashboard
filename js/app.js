@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://beepnamymzhmfgtbruhk.supabase.co/rest/v1/";
-const SUPABASE_KEY = "sb_publishable_M8twaU9HppdklZxLDI0pLg_G3UaxuWq";
+const SUPABASE_KEY = "TU_PUBLISHABLE_KEY";
 
 async function cargarMovimientos() {
 
@@ -14,15 +14,28 @@ async function cargarMovimientos() {
     );
 
     const movimientos = await response.json();
-    const hoy = new Date();
 
+    const hoy = new Date();
     const mesActual = hoy.getMonth();
     const anioActual = hoy.getFullYear();
-    
+
     let gastoDelMes = 0;
     let ingresoDelMes = 0;
-    
+
     movimientos.forEach(movimiento => {
+
+        const fecha = new Date(movimiento.transaction_date);
+
+        const mismoMes =
+            fecha.getMonth() === mesActual &&
+            fecha.getFullYear() === anioActual;
+
+        if (
+            mismoMes &&
+            movimiento.transaction_type === "Gasto"
+        ) {
+            gastoDelMes += Number(movimiento.amount);
+        }
 
         if (
             mismoMes &&
@@ -30,30 +43,18 @@ async function cargarMovimientos() {
         ) {
             ingresoDelMes += Number(movimiento.amount);
         }
-        
-        const fecha = new Date(movimiento.transaction_date);
-    
-        const mismoMes =
-            fecha.getMonth() === mesActual &&
-            fecha.getFullYear() === anioActual;
-    
-        if (
-            mismoMes &&
-            movimiento.transaction_type === "Gasto"
-        ) {
-            gastoDelMes += Number(movimiento.amount);
-        }
-    
+
     });
+
     document.getElementById("monthly-expense").textContent =
-    `$${gastoDelMes.toLocaleString()}`;
+        `$${gastoDelMes.toLocaleString()}`;
+
+    document.getElementById("monthly-income").textContent =
+        `$${ingresoDelMes.toLocaleString()}`;
 
     document.getElementById("total-movements").textContent =
-    movimientos.length;
-    
-    document.getElementById("monthly-income").textContent =
-    `$${ingresoDelMes.toLocaleString()}`;
-    
+        movimientos.length;
+
     const tabla = document.getElementById("transactions-table");
 
     tabla.innerHTML = "";
