@@ -14,42 +14,47 @@ async function cargarMovimientos() {
     );
 
     const movimientos = await response.json();
+
     const hoy = new Date();
 
     const mesActual = hoy.getMonth();
     const anioActual = hoy.getFullYear();
-    
+
     let gastoDelMes = 0;
     let ingresoDelMes = 0;
-    
+
     movimientos.forEach(movimiento => {
-    
+
         const fecha = new Date(movimiento.transaction_date);
-    
+
         const mismoMes =
             fecha.getMonth() === mesActual &&
             fecha.getFullYear() === anioActual;
-    
+
         if (
             mismoMes &&
             movimiento.transaction_type === "Gasto"
         ) {
             gastoDelMes += Number(movimiento.amount);
         }
+
         if (
             mismoMes &&
             movimiento.transaction_type === "Ingreso"
         ) {
             ingresoDelMes += Number(movimiento.amount);
         }
-    
+
     });
 
-    document.getElementById("total-movements").textContent =
-    movimientos.length;
+    document.getElementById("monthly-expense").textContent =
+        `$${gastoDelMes.toLocaleString()}`;
 
     document.getElementById("monthly-income").textContent =
-    `$${ingresoDelMes.toLocaleString()}`;
+        `$${ingresoDelMes.toLocaleString()}`;
+
+    document.getElementById("total-movements").textContent =
+        movimientos.length;
 
     const tabla = document.getElementById("transactions-table");
 
@@ -60,7 +65,7 @@ async function cargarMovimientos() {
         tabla.innerHTML += `
             <tr>
                 <td>${movimiento.transaction_date}</td>
-                <td>$${movimiento.amount}</td>
+                <td>$${Number(movimiento.amount).toLocaleString()}</td>
                 <td>${movimiento.account ?? ""}</td>
                 <td>${movimiento.category ?? ""}</td>
                 <td>${movimiento.description ?? ""}</td>
