@@ -20,6 +20,7 @@ async function cargarMovimientos() {
     const anioActual = hoy.getFullYear();
     
     let gastoDelMes = 0;
+    let ingresoDelMes = 0;
     
     movimientos.forEach(movimiento => {
     
@@ -35,11 +36,20 @@ async function cargarMovimientos() {
         ) {
             gastoDelMes += Number(movimiento.amount);
         }
+        if (
+            mismoMes &&
+            movimiento.transaction_type === "Ingreso"
+        ) {
+            ingresoDelMes += Number(movimiento.amount);
+        }
     
     });
 
     document.getElementById("total-movements").textContent =
     movimientos.length;
+
+    document.getElementById("monthly-income").textContent =
+    `$${ingresoDelMes.toLocaleString()}`;
 
     const tabla = document.getElementById("transactions-table");
 
