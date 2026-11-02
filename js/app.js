@@ -172,7 +172,7 @@
 })();
 
 // --- INTEGRACIÓN CON GEMINI IA ---
-    const GEMINI_API_KEY = "TU_API_KEY_DE_GEMINI"; // Reemplaza esto con tu llave de Google AI Studio
+    const GEMINI_API_KEY = "AQ.Ab8RN6JdyDXc9ofzsjxfMV5XitCTxasimkD6-N6BOPEny1K8Qw"; // Reemplaza esto con tu llave de Google AI Studio
 
     async function consultarIA(preguntaUsuario) {
         const chatResponse = document.getElementById("ai-chat-response");
