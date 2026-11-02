@@ -56,28 +56,24 @@
 
             const esAhorro = categoria === "ahorro";
             const esIngreso = tipo === "Ingreso" || tipo === "Ingresso";
-            const esTransaccionAhorroMercadoPago = esAhorro && tipo === "Transaccion" && cuenta.toLowerCase() === "mercado pago";
+            
+            // Detectamos el ahorro de forma universal cuando su categoría sea "ahorro"
+            // (Ya sea que entre a Mercado Pago como Transacción o se registre como Ahorro)
+            const esMovimientoAhorroValido = esAhorro;
 
             // 1. Cálculo de Saldo por Cuenta
             if (cuenta && saldosCuentas[cuenta] !== undefined) {
-                if (esTransaccionAhorroMercadoPago) {
-                    // Suma el ahorro recibido a Mercado Pago
-                    saldosCuentas[cuenta] += monto;
-                } else if (esIngreso) {
+                if (esIngreso) {
                     saldosCuentas[cuenta] += monto;
                 } else {
-                    // Resta dinero de Santander/Banamex (tanto por gastos como por la salida hacia ahorro)
+                    // Resta dinero de las cuentas operativas o aplica según corresponda
                     saldosCuentas[cuenta] -= monto;
                 }
             }
 
-            // 2. Acumulado de Ahorro Total Histórico
-            if (esTransaccionAhorroMercadoPago || (esAhorro && tipo === "Gasto")) {
-                // Para evitar duplicar el monto del doble movimiento en la tarjeta de ahorro,
-                // contabilizamos únicamente las entradas oficiales a Mercado Pago
-                if (esTransaccionAhorroMercadoPago) {
-                    ahorroTotalHistorico += monto;
-                }
+            // 2. Acumulado de Ahorro Total Histórico (Suma todo lo que tenga categoría ahorro)
+            if (esMovimientoAhorroValido) {
+                ahorroTotalHistorico += monto;
             }
 
             // 3. Filtrar movimientos del mes seleccionado para las tarjetas de ingresos/gastos y la tabla
@@ -92,7 +88,7 @@
                         if (esIngreso) {
                             ingresoDelMes += monto;
                         } else if (tipo === "Gasto") {
-                            gastoDelMes += monto; // Solo gastos operativos (comida, compras, etc.)
+                            gastoDelMes += monto; // Solo gastos operativos reales
                         }
                     }
                 }
