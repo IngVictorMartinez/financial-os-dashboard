@@ -53,17 +53,16 @@
             const tipo = mov.transaction_type ? mov.transaction_type.trim() : "";
             const categoria = mov.category ? mov.category.toLowerCase().trim() : "";
             
-            // Detectar si es un ahorro (ya sea por categoría "ahorro" o tipo "transacción")
-            const esAhorro = categoria === "ahorro" || tipo === "Transaccion" || tipo === "Transferencia";
+            // Detectar si es un ahorro por su categoría
+            const esAhorro = categoria === "ahorro";
+            const esIngreso = tipo === "Ingreso" || tipo === "Ingresso";
 
-            // 1. Cálculo de saldo por cuenta según el tipo de movimiento
+            // 1. Cálculo de saldo por cuenta
             if (mov.account && saldosCuentas[mov.account] !== undefined) {
-                if (tipo === "Ingreso" || tipo === "Ingresso") {
+                if (esIngreso) {
                     saldosCuentas[mov.account] += monto;
-                } else if (tipo === "Gasto") {
-                    saldosCuentas[mov.account] -= monto;
-                } else if (esAhorro) {
-                    // El ahorro/transacción interna resta de la cuenta de origen
+                } else {
+                    // Tanto los gastos normales como los ahorros restan dinero de la cuenta origen
                     saldosCuentas[mov.account] -= monto;
                 }
             }
@@ -77,11 +76,11 @@
                     movimientosDelMes.push(mov);
                     
                     if (esAhorro) {
-                        ahorroDelMes += monto; // Se acumula en la tarjeta de ahorros del mes
-                    } else if (tipo === "Ingreso" || tipo === "Ingresso") {
-                        ingresoDelMes += monto;
-                    } else if (tipo === "Gasto") {
-                        gastoDelMes += monto;
+                        ahorroDelMes += monto; // Se va directo a la tarjeta de Ahorros del Mes
+                    } else if (esIngreso) {
+                        ingresoDelMes += monto; // Se va a Ingresos del Mes
+                    } else {
+                        gastoDelMes += monto;   // Se va a Gastos del Mes (gasto operativo normal)
                     }
                 }
             }
