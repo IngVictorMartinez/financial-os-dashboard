@@ -44,7 +44,7 @@
 
         let gastoDelMes = 0;
         let ingresoDelMes = 0;
-        let ahorroDelMes = 0;
+        let ahorroTotalHistorico = 0; // Acumulado total de todos los tiempos
 
         const movimientosDelMes = [];
 
@@ -57,17 +57,21 @@
             const esAhorro = categoria === "ahorro";
             const esIngreso = tipo === "Ingreso" || tipo === "Ingresso";
 
-            // 1. Cálculo de saldo por cuenta
+            // 1. Cálculo de saldo por cuenta (global)
             if (mov.account && saldosCuentas[mov.account] !== undefined) {
                 if (esIngreso) {
                     saldosCuentas[mov.account] += monto;
                 } else {
-                    // Tanto los gastos normales como los ahorros restan dinero de la cuenta origen
                     saldosCuentas[mov.account] -= monto;
                 }
             }
 
-            // 2. Filtrar movimientos del mes seleccionado para las tarjetas
+            // 1.1 Acumular el Ahorro Total histórico (sin importar el mes seleccionado)
+            if (esAhorro) {
+                ahorroTotalHistorico += monto;
+            }
+
+            // 2. Filtrar movimientos del mes seleccionado para las tarjetas de ingresos/gastos y la tabla
             if (mov.transaction_date) {
                 const fechaLimpia = mov.transaction_date.toString().trim().split('T')[0];
                 const partes = fechaLimpia.split(/[-./]/).map(Number);
@@ -75,12 +79,12 @@
                 if (partes.length >= 2 && partes[1] === mesSel && partes[0] === anioSel) {
                     movimientosDelMes.push(mov);
                     
-                    if (esAhorro) {
-                        ahorroDelMes += monto; // Se va directo a la tarjeta de Ahorros del Mes
-                    } else if (esIngreso) {
-                        ingresoDelMes += monto; // Se va a Ingresos del Mes
-                    } else {
-                        gastoDelMes += monto;   // Se va a Gastos del Mes (gasto operativo normal)
+                    if (!esAhorro) { // Los ahorros ya se sumaron al total histórico, aquí filtramos solo ingresos/gastos operativos
+                        if (esIngreso) {
+                            ingresoDelMes += monto;
+                        } else {
+                            gastoDelMes += monto;
+                        }
                     }
                 }
             }
@@ -91,14 +95,14 @@
         const elTotalBalance = document.getElementById("total-balance");
         if (elTotalBalance) elTotalBalance.textContent = `$${saldoTotalGeneral.toLocaleString()}`;
 
-        // 4. Renderizar Tarjetas Mensuales
+        // 4. Renderizar Tarjetas Mensuales y de Ahorro Total
         const elIncome = document.getElementById("monthly-income");
         const elExpense = document.getElementById("monthly-expense");
         const elSavings = document.getElementById("monthly-savings");
 
         if (elIncome) elIncome.textContent = `$${ingresoDelMes.toLocaleString()}`;
         if (elExpense) elExpense.textContent = `$${gastoDelMes.toLocaleString()}`;
-        if (elSavings) elSavings.textContent = `$${ahorroDelMes.toLocaleString()}`;
+        if (elSavings) elSavings.textContent = `$${ahorroTotalHistorico.toLocaleString()}`; // Muestra el acumulado total
 
         // Balance Neto del Mes seleccionado (Ingresos reales - Gastos operativos)
         const balanceNeto = ingresoDelMes - gastoDelMes;
@@ -136,7 +140,7 @@
             movimientosDelMes.forEach(mov => {
                 const tipo = mov.transaction_type ? mov.transaction_type.trim() : "";
                 const categoria = mov.category ? mov.category.toLowerCase().trim() : "";
-                const esAhorro = categoria === "ahorro" || tipo === "Transaccion" || tipo === "Transferencia";
+                const esAhorro = categoria === "ahorro";
                 
                 let badgeClass = 'badge-gasto';
                 if (tipo === "Ingreso" || tipo === "Ingresso") badgeClass = 'badge-ingreso';
