@@ -170,3 +170,70 @@
 
     cargarDatosIniciales();
 })();
+
+// --- INTEGRACIÓN CON GEMINI IA ---
+    const GEMINI_API_KEY = "TU_API_KEY_DE_GEMINI"; // Reemplaza esto con tu llave de Google AI Studio
+
+    async function consultarIA(preguntaUsuario) {
+        const chatResponse = document.getElementById("ai-chat-response");
+        if (!chatResponse) return;
+
+        chatResponse.innerHTML = "Analizando tus finanzas...";
+
+        // 1. Preparamos el resumen de los datos financieros actuales para dárselos como contexto a la IA
+        const resumenDatos = {
+            cuentas: cuentasGlobales,
+            movimientosMesSeleccionado: movimientosGlobales.map(m => ({
+                fecha: m.transaction_date,
+                monto: m.amount,
+                cuenta: m.account,
+                categoria: m.category,
+                tipo: m.transaction_type
+            }))
+        };
+
+        const promptSistema = `
+            Eres un asesor financiero personal amigable y experto. Tienes acceso a los siguientes datos del usuario en formato JSON:
+            ${JSON.stringify(resumenDatos)}
+            
+            Responde de forma concisa, clara, directa y útil en español a la siguiente pregunta del usuario, basándote estrictamente en sus datos reales.
+            Pregunta del usuario: "${preguntaUsuario}"
+        `;
+
+        try {
+            const respuesta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: promptSistema }] }]
+                })
+            });
+
+            const data = await respuesta.json();
+            const textoIA = data.candidates?.[0]?.content?.parts?.[0]?.text || "No pude procesar tu consulta en este momento.";
+            
+            chatResponse.innerHTML = textoIA.replace(/\n/g, '<br>');
+
+        } catch (error) {
+            console.error("Error al consultar Gemini:", error);
+            chatResponse.innerHTML = "Ocurrió un error al conectar con la IA. Verifica tu llave de API.";
+        }
+    }
+
+    // Escuchar el botón de enviar en el chat de IA
+    const btnEnviarIA = document.getElementById("ai-send-btn");
+    const inputIA = document.getElementById("ai-user-input");
+
+    if (btnEnviarIA && inputIA) {
+        btnEnviarIA.addEventListener("click", () => {
+            const texto = inputIA.value.trim();
+            if (texto) consultarIA(texto);
+        });
+
+        inputIA.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                const texto = inputIA.value.trim();
+                if (texto) consultarIA(texto);
+            }
+        });
+    }
