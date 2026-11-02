@@ -200,3 +200,12 @@ tr:last-child td {
 .card.savings p { 
     color: #34d399; 
 }
+
+/* Color para la tarjeta de Balance del Mes */
+.card.net-month p {
+    color: #cbd5e1; /* Gris claro por defecto */
+}
+
+/* Clases dinámicas si el balance es positivo o negativo (opcional desde JS) */
+.card.net-month p.positive { color: #38bdf8; }
+.card.net-month p.negative { color: #f87171; }
