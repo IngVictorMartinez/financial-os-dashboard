@@ -21,7 +21,7 @@
             const mesActualFiltro = fechaActual.getMonth() + 1;
             const anioActualFiltro = fechaActual.getFullYear();
 
-            // Mapa para saldos por cuenta (Suma total real de las cuentas)
+            // Mapa para saldos por cuenta
             const saldosCuentas = {};
             cuentas.forEach(c => saldosCuentas[c.name] = 0);
 
@@ -64,10 +64,16 @@
             const saldoTotalGeneral = Object.values(saldosCuentas).reduce((acc, val) => acc + val, 0);
             document.getElementById("total-balance").textContent = `$${saldoTotalGeneral.toLocaleString()}`;
 
-            // 4. Renderizar Tarjetas Mensuales (3 tarjetas)
+            // 4. Renderizar Tarjetas Mensuales (Ingresos, Gastos, Ahorros, Balance)
             document.getElementById("monthly-income").textContent = `$${ingresoDelMes.toLocaleString()}`;
             document.getElementById("monthly-expense").textContent = `$${gastoDelMes.toLocaleString()}`;
             document.getElementById("monthly-savings").textContent = `$${ahorroDelMes.toLocaleString()}`;
+
+            // Cálculo y asignación del Balance Neto del Mes
+            const balanceNeto = ingresoDelMes - gastoDelMes;
+            const elBalance = document.getElementById("monthly-net");
+            elBalance.textContent = `$${balanceNeto.toLocaleString()}`;
+            elBalance.className = balanceNeto >= 0 ? "positive" : "negative";
 
             // 5. Renderizar Lista de Cuentas
             const containerCuentas = document.getElementById("accounts-container");
@@ -97,7 +103,7 @@
                 const esAhorro = mov.category && mov.category.toLowerCase().trim() === "ahorro";
                 
                 let badgeClass = esIngreso ? 'badge-ingreso' : 'badge-gasto';
-                if (esAhorro) badgeClass = 'badge-ahorro'; // Opcional si quieres darle color verde ahorro
+                if (esAhorro) badgeClass = 'badge-ahorro';
 
                 tabla.innerHTML += `
                     <tr>
