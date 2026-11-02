@@ -44,7 +44,7 @@
 
         let gastoDelMes = 0;
         let ingresoDelMes = 0;
-        let ahorroTotalHistorico = 0; // Acumulado total de todos los tiempos
+        let ahorroTotalHistorico = 0; // Se calculará en función de Mercado Pago o registros de Ahorro
 
         const movimientosDelMes = [];
 
@@ -52,26 +52,35 @@
             const monto = Number(mov.amount) || 0;
             const tipo = mov.transaction_type ? mov.transaction_type.trim() : "";
             const categoria = mov.category ? mov.category.toLowerCase().trim() : "";
-            
-            // Detectar si es un ahorro por su categoría
+            const cuenta = mov.account ? mov.account.trim() : "";
+
             const esAhorro = categoria === "ahorro";
             const esIngreso = tipo === "Ingreso" || tipo === "Ingresso";
+            const esTransaccionAhorroMercadoPago = esAhorro && tipo === "Transaccion" && cuenta.toLowerCase() === "mercado pago";
 
-            // 1. Cálculo de saldo por cuenta (global)
-            if (mov.account && saldosCuentas[mov.account] !== undefined) {
-                if (esIngreso) {
-                    saldosCuentas[mov.account] += monto;
+            // 1. Cálculo de Saldo por Cuenta
+            if (cuenta && saldosCuentas[cuenta] !== undefined) {
+                if (esTransaccionAhorroMercadoPago) {
+                    // Suma el ahorro recibido a Mercado Pago
+                    saldosCuentas[cuenta] += monto;
+                } else if (esIngreso) {
+                    saldosCuentas[cuenta] += monto;
                 } else {
-                    saldosCuentas[mov.account] -= monto;
+                    // Resta dinero de Santander/Banamex (tanto por gastos como por la salida hacia ahorro)
+                    saldosCuentas[cuenta] -= monto;
                 }
             }
 
-            // 1.1 Acumular el Ahorro Total histórico (sin importar el mes seleccionado)
-            if (esAhorro) {
-                ahorroTotalHistorico += monto;
+            // 2. Acumulado de Ahorro Total Histórico
+            if (esTransaccionAhorroMercadoPago || (esAhorro && tipo === "Gasto")) {
+                // Para evitar duplicar el monto del doble movimiento en la tarjeta de ahorro,
+                // contabilizamos únicamente las entradas oficiales a Mercado Pago
+                if (esTransaccionAhorroMercadoPago) {
+                    ahorroTotalHistorico += monto;
+                }
             }
 
-            // 2. Filtrar movimientos del mes seleccionado para las tarjetas de ingresos/gastos y la tabla
+            // 3. Filtrar movimientos del mes seleccionado para las tarjetas de ingresos/gastos y la tabla
             if (mov.transaction_date) {
                 const fechaLimpia = mov.transaction_date.toString().trim().split('T')[0];
                 const partes = fechaLimpia.split(/[-./]/).map(Number);
@@ -79,32 +88,32 @@
                 if (partes.length >= 2 && partes[1] === mesSel && partes[0] === anioSel) {
                     movimientosDelMes.push(mov);
                     
-                    if (!esAhorro) { // Los ahorros ya se sumaron al total histórico, aquí filtramos solo ingresos/gastos operativos
+                    if (!esAhorro) {
                         if (esIngreso) {
                             ingresoDelMes += monto;
-                        } else {
-                            gastoDelMes += monto;
+                        } else if (tipo === "Gasto") {
+                            gastoDelMes += monto; // Solo gastos operativos (comida, compras, etc.)
                         }
                     }
                 }
             }
         });
 
-        // 3. Renderizar Dinero Total Disponible General
+        // 4. Renderizar Dinero Total Disponible Operativo (Suma de Santander, Banamex, Efectivo, etc. excluyendo o incluyendo Mercado Pago según tu saldo)
         const saldoTotalGeneral = Object.values(saldosCuentas).reduce((acc, val) => acc + val, 0);
         const elTotalBalance = document.getElementById("total-balance");
         if (elTotalBalance) elTotalBalance.textContent = `$${saldoTotalGeneral.toLocaleString()}`;
 
-        // 4. Renderizar Tarjetas Mensuales y de Ahorro Total
+        // 5. Renderizar Tarjetas Mensuales y de Ahorro Total
         const elIncome = document.getElementById("monthly-income");
         const elExpense = document.getElementById("monthly-expense");
         const elSavings = document.getElementById("monthly-savings");
 
         if (elIncome) elIncome.textContent = `$${ingresoDelMes.toLocaleString()}`;
         if (elExpense) elExpense.textContent = `$${gastoDelMes.toLocaleString()}`;
-        if (elSavings) elSavings.textContent = `$${ahorroTotalHistorico.toLocaleString()}`; // Muestra el acumulado total
+        if (elSavings) elSavings.textContent = `$${ahorroTotalHistorico.toLocaleString()}`;
 
-        // Balance Neto del Mes seleccionado (Ingresos reales - Gastos operativos)
+        // Balance Neto del Mes seleccionado (Ingresos - Gastos operativos)
         const balanceNeto = ingresoDelMes - gastoDelMes;
         const elBalance = document.getElementById("monthly-net");
         if (elBalance) {
@@ -112,7 +121,7 @@
             elBalance.className = balanceNeto >= 0 ? "positive" : "negative";
         }
 
-        // 5. Renderizar Cuentas
+        // 6. Renderizar Lista de Cuentas
         const containerCuentas = document.getElementById("accounts-container");
         if (containerCuentas) {
             containerCuentas.innerHTML = "";
@@ -127,7 +136,7 @@
             });
         }
 
-        // 6. Renderizar Tabla del Mes Seleccionado
+        // 7. Renderizar Tabla de Movimientos del Mes
         const tabla = document.getElementById("transactions-table");
         if (tabla) {
             tabla.innerHTML = "";
@@ -159,11 +168,9 @@
         }
     }
 
-    // Escuchar cambios en el selector de mes si existe
     if (picker) {
         picker.addEventListener("change", procesarYRenderizar);
     }
 
-    // Cargar datos al iniciar
     cargarDatosIniciales();
 })();
