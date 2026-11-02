@@ -56,7 +56,7 @@
 
             const esAhorro = categoria === "ahorro";
             const esIngreso = tipo === "Ingreso" || tipo === "Ingresso";
-            const esTransaccionAhorroMercadoPago = esAhorro && tipo === "Transaccion" && cuenta.toLowerCase() === "mercado pago";
+            const esTransaccionAhorroMercadoPago = esAhorro && tipo === "Transaccion" && cuenta.toLowerCase() === "Mercado Pago";
 
             // 1. Cálculo de Saldo por Cuenta
             if (cuenta && saldosCuentas[cuenta] !== undefined) {
